@@ -4,7 +4,7 @@ library(formatR)
 library(reshape)
 library(utils)
 
-
+## this function cleans up the feature names to add domain meaning and adjustments to improve readability
 getFeaturesColumnNames <- function(features.col.names) {
     features.col.names <- sapply(features.col.names, gsub, pattern = "([A-Z])", replacement = "_\\1")
     features.col.names <- sapply(features.col.names, gsub, pattern = "-", replacement = "_")
@@ -20,13 +20,14 @@ getFeaturesColumnNames <- function(features.col.names) {
 
 
 buildHarDataFrame <- function(data.dir, subject.category) {
+  
+    ## the "def" files are our description lookup files that define features and activity names
+  
     features.def.file.name <- paste0(data.dir, "/", "features.txt")
     activity.def.file.name <- paste0(data.dir, "/", "activity_labels.txt")
     subjects.file.name <- paste0(data.dir, "/", subject.category, "/", "subject_", subject.category, ".txt")
     har.file.name <- paste0(data.dir, "/", subject.category, "/", "X_", subject.category, ".txt")
     activity.file.name <- paste0(data.dir, "/", subject.category, "/", "y_", subject.category, ".txt")
-    
-    print(features.def.file.name)
     
     col.definition.df <- read.csv(features.def.file.name, header = FALSE, sep = " ")
     colnames(col.definition.df) <- c("position", "description")
@@ -34,6 +35,7 @@ buildHarDataFrame <- function(data.dir, subject.category) {
     features.col.names <- col.definition.df[, "description"]
     features.col.names <- getFeaturesColumnNames(features.col.names)
     
+    # let's only gather up the mean and standard deviation features that we want
     desired.columns <- regexpr("(mean..|std..)(-[XYZ]){0,1}$", col.definition.df[, "description"]) > 0
     desired.columns <- col.definition.df[desired.columns, ][, "position"]
     
@@ -58,14 +60,19 @@ buildHarDataFrame <- function(data.dir, subject.category) {
     colnames(har.data.df) <- features.col.names
     har.data.df <- har.data.df[, desired.columns]
 
+    ## here's the binding of data file with subject number and activity performed
+    
     har.data.df <- cbind(har.data.df, subject.no.df)
     colnames(har.data.df)[ncol(har.data.df)] = "subject_number"
     har.data.df <- cbind(har.data.df, training.activity.df)
     colnames(har.data.df)[ncol(har.data.df)] = "activity_number"
     har.data.df <- cbind(har.data.df, rep("train", nrow(har.data.df)))
+    
+    ## added concept of study_group so that once fies are combined we can see which subject was part of 
+    ## test or train; not a requirement
     colnames(har.data.df)[ncol(har.data.df)] = "study_group"
     har.data.df <- merge(har.data.df, activity.definition.df, by.x = "activity_number", by.y = "activity_number")
-#   removing activity number since we have the more meaningful activity name ("activity")
+    ## removing activity number since we have the more meaningful activity name ("activity")
     har.data.df$activity_number <- NULL
     
     har.data.df
@@ -78,8 +85,8 @@ buildHarDataFrame <- function(data.dir, subject.category) {
 # collect out train and test data
 # then combine into one file
 
-study.train.df <- buildHarDataFrame("sampleset", "train")
-study.test.df  <- buildHarDataFrame("sampleset", "test")
+study.train.df <- buildHarDataFrame("ucihardata", "train")
+study.test.df  <- buildHarDataFrame("ucihardata", "test")
 
 study.df <- rbind(study.train.df, study.test.df)
 
