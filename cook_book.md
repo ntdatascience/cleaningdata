@@ -14,6 +14,10 @@ David's diagram from the discussion forum best summarize how the files are combi
 
 The "X_train.txt" and "X_test.txt" file required some preprocessing as it the separator were not uniform. File file contained spacing at the begining and ending of each line and some fields were separated by more than one space.
 
+## Units
+
+Since "features are normalized and bounded within [-1,1]" the resulting mean will also be normalized and bounded within [-1,1].
+
 ##Which Variables/Calculations?
 
 Which columns are mean or standard deviation: selected variable were determined from the original feature data set what matched this reqular expression "(mean..|std..)(-[XYZ]){0,1}$"
