@@ -1,2 +1,16 @@
-cleaningdata
-============
+## Cook Book
+
+Explaination of data gathering and description of tidy data results.For project background refer to project assignment:
+
+https://class.coursera.org/getdata-007/human_grading/view/courses/972585/assessments/3/submissions
+
+##Which Variables/Calculations?
+
+Which columns are mean or standard deviation: selected variable were determined from the original feature data set what matched this reqular expression "(mean..|std..)(-[XYZ]){0,1}$"
+
+## Attributes of Tidy Results
+
+Subject Number: id number assigned to the participant
+Activity: physical activity being performed (WALKING,WALKING UPSTAIRS, WALKING DOWNSTAIRS, LYING)
+Variable (Metric/Calculation): the specific type of measurement that was calculated and recorded
+Mean: the mean value for that subject, activity and variable 
